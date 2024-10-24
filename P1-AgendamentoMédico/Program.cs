@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using P1_AgendamentoMédico.Repositories;
 using P1_AgendamentoMédico.Services;
+using System.Text;
 
 namespace P1_AgendamentoMédico
 {
@@ -36,6 +39,25 @@ namespace P1_AgendamentoMédico
             builder.Services.AddScoped<PacienteRepository>();
             builder.Services.AddScoped<AgendamentoRepository>();
         }
+
+        private static void AuthenticationMiddleware(IHostApplicationBuilder builder)
+        {
+            // Configuração de autenticação e autorização
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SECRET_KEY"]!))
+                    };
+                });
+            builder.Services.AddAuthorization();
+        }
+
 
         private static void InitializeSwagger(WebApplication app)
         {
