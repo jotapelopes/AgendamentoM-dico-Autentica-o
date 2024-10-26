@@ -1,6 +1,10 @@
-﻿namespace P1_AgendamentoMédico.Interfaces
+﻿using P1_AgendamentoMédico.Models;
+
+namespace P1_AgendamentoMédico.Interfaces
 {
-    public class ITokenService
+    public interface ITokenService
     {
+
+        public string CreateCustomerToken(Paciente paciente);
     }
 }

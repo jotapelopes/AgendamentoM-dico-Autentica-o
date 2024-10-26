@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using P1_AgendamentoMédico.Repositories;
 using P1_AgendamentoMédico.Services;
 using System.Text;
@@ -9,11 +10,35 @@ namespace P1_AgendamentoMédico
 {
     public class Program
     {
-
         private static void ConfigureSwagger(IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Carmed de Briga", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
         }
 
         private static void InjectRepositoryDependency(IHostApplicationBuilder builder)
@@ -72,18 +97,23 @@ namespace P1_AgendamentoMédico
             ConfigureSwagger(builder.Services);
             InjectRepositoryDependency(builder);
             AddControllersAndDependencies(builder);
+            AuthenticationMiddleware(builder);
 
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
-                // Inicialização do Swagger
                 InitializeSwagger(app);
             }
+
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 
             app.Run();
         }
+
     }
 }

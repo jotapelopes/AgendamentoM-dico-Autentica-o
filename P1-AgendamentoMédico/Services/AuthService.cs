@@ -1,6 +1,7 @@
 ﻿using static P1_AgendamentoMédico.Services.AuthService;
 using System.Security.Claims;
 using P1_AgendamentoMédico.Models;
+using P1_AgendamentoMédico.Interfaces;
 
 namespace P1_AgendamentoMédico.Services
 {

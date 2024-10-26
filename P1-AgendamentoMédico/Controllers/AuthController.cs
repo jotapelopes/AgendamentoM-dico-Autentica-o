@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿    using Microsoft.AspNetCore.Mvc;
+using P1_AgendamentoMédico.DTOs;
+using P1_AgendamentoMédico.Interfaces;
 
 namespace P1_AgendamentoMédico.Controllers
-{
-    public class AuthController
-    {
+   {
         [Route("api/[controller]")]
         [ApiController]
         public class AuthController : ControllerBase
